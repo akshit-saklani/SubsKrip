@@ -1,0 +1,212 @@
+<div class="ui clearing segment">
+    <h2 class="ui left floated header">Team Members</h2>
+    <button id="addMemberBtn" class="ui right floated primary button">
+        <i class="user plus icon"></i> Add Member
+    </button>
+</div>
+
+<!-- Team Member Cards -->
+<div class="ui three stackable cards">
+    <% teamMembers.forEach(member=> { %>
+        <div class="ui card" data-id="<%= member.id %>" data-name="<%= member.name %>" data-email="<%= member.email %> "
+            data-role="<%= member.role %>">
+            <div class="content">
+                <div class="header">
+                    <%= member.name %>
+                </div>
+                <div class="meta">
+                    <%= member.role %>
+                </div>
+                <div class="description">
+                    <p><i class="envelope icon"></i>
+                        <%= member.email %>
+                    </p>
+                </div>
+            </div>
+            <div class="extra content">
+                <% if (member.active) { %>
+                    <div class="ui green label">Active</div>
+                    <% } else { %>
+                        <div class="ui grey label">Disabled</div>
+                        <% } %>
+
+                            <div class="ui buttons right floated mini">
+                                <button class="ui blue button edit-member">
+                                    <i class="edit icon"></i> Edit
+                                </button>
+                                <% if (member.active) { %>
+                                    <button class="ui red button disable-member">
+                                        <i class="ban icon"></i> Disable
+                                    </button>
+                                    <% } else { %>
+                                        <button class="ui green button enable-member">
+                                            <i class="check icon"></i> Enable
+                                        </button>
+                                        <% } %>
+                            </div>
+            </div>
+        </div>
+        <% }) %>
+</div>
+
+<!-- Add Member Modal -->
+<div id="addMemberModal" class="ui small modal">
+    <div class="header">Add New Team Member</div>
+    <div class="content">
+        <form class="ui form" id="addMemberForm">
+            <div class="field">
+                <label>Full Name</label>
+                <input type="text" name="name" placeholder="Enter full name" required>
+            </div>
+            <div class="field">
+                <label>Email</label>
+                <input type="email" name="email" placeholder="Enter email" required>
+            </div>
+            <div class="field">
+                <label>Role</label>
+                <div class="ui selection dropdown">
+                    <input type="hidden" name="role" value="viewer">
+                    <i class="dropdown icon"></i>
+                    <div class="default text">Select Role</div>
+                    <div class="menu">
+                        <div class="item" data-value="admin">Admin</div>
+                        <div class="item" data-value="manager">Manager</div>
+                        <div class="item" data-value="finance">Finance</div>
+                        <div class="item" data-value="viewer">Viewer</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="field">
+                <label>Password</label>
+                <input type="password" name="password" placeholder="Enter temporary password" required>
+            </div>
+            <button type="submit" class="ui primary button">Add Member</button>
+        </form>
+    </div>
+</div>
+
+<!-- Edit Member Modal -->
+<div id="editMemberModal" class="ui small modal">
+    <div class="header">Edit Team Member</div>
+    <div class="content">
+        <form class="ui form" id="editMemberForm">
+            <input type="hidden" name="id">
+            <div class="field">
+                <label>Full Name</label>
+                <input type="text" name="name" required>
+            </div>
+            <div class="field">
+                <label>Email</label>
+                <input type="email" name="email" required>
+            </div>
+            <div class="field">
+                <label>Role</label>
+                <div class="ui selection dropdown">
+                    <input type="hidden" name="role" value="viewer">
+                    <i class="dropdown icon"></i>
+                    <div class="default text">Select Role</div>
+                    <div class="menu">
+                        <div class="item" data-value="admin">Admin</div>
+                        <div class="item" data-value="manager">Manager</div>
+                        <div class="item" data-value="finance">Finance</div>
+                        <div class="item" data-value="viewer">Viewer</div>
+                    </div>
+                </div>
+            </div>
+            <div class="field">
+                <label>Password</label>
+                <input type="password" name="password" placeholder="Enter temporary password" >
+            </div>
+            <button type="submit" class="ui primary button">Save Changes</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Handle Add Member Modal
+    $('#addMemberBtn').on('click', function () {
+        $('#addMemberModal').modal('show');
+    });
+
+    //   $('#addMemberForm').on('submit', function(e) {
+    //     e.preventDefault();
+    //     const data = $(this).serializeArray();
+    //     console.log("New member:", data);
+    //     // TODO: Send AJAX POST request to add member
+    //     $('#addMemberModal').modal('hide');
+    //   });
+
+    $('#addMemberForm').on('submit', async function (e) {
+        e.preventDefault();
+        const data = $(this).serialize();
+
+        const res = await fetch('/api/team', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: data
+        });
+
+        if (res.ok) location.reload();
+        else alert('Error adding member');
+    });
+
+
+    // Handle Edit Member Modal
+    $('.edit-member').on('click', function () {
+        const card = $(this).closest('.card');
+        const id = card.data('id');
+        const name = card.data('name');
+        const email = card.data('email');
+        const role = card.data('role');
+
+        // Fill form with current data
+        const form = $('#editMemberForm');
+        form.find('input[name="id"]').val(id);
+        form.find('input[name="name"]').val(name);
+        form.find('input[name="email"]').val(email);
+        form.find('input[name="role"]').val(role);
+
+        $('#editMemberModal').modal('show');
+    });
+
+    // $('#editMemberForm').on('submit', function (e) {
+    //     e.preventDefault();
+    //     const data = $(this).serializeArray();
+    //     console.log("Updated member:", data);
+    //     // TODO: Send AJAX PUT request to update member
+    //     $('#editMemberModal').modal('hide');
+    // });
+
+    $('#editMemberForm').on('submit', async function (e) {
+        e.preventDefault();
+        const id = $(this).find('[name="id"]').val();
+        const data = $(this).serialize();
+
+        const res = await fetch(`/api/team/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: data
+        });
+
+        if (res.ok) location.reload();
+        else alert('Error updating member');
+    });
+
+
+    // // Enable / Disable member
+    // $('.disable-member, .enable-member').on('click', function () {
+    //     const id = $(this).closest('.card').data('id');
+    //     const action = $(this).hasClass('disable-member') ? 'disable' : 'enable';
+    //     console.log(`Performing ${action} on member ID:`, id);
+    //     // TODO: Send AJAX request to toggle status
+    // });
+
+    $('.disable-member, .enable-member').on('click', async function () {
+        const id = $(this).closest('.card').data('id');
+        const res = await fetch(`/api/team/${id}/toggle`, { method: 'PATCH' });
+        if (res.ok) location.reload();
+        else alert('Error toggling status');
+    });
+
+</script>

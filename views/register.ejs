@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Register | Subscription Billing</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.5.0/dist/semantic.min.css">
+</head>
+<body>
+  <div class="ui middle aligned center aligned grid" style="height: 100vh;">
+    <div class="column" style="max-width: 400px;">
+      <h2 class="ui teal header">Create Your Account</h2>
+      <form class="ui large form" method="POST" action="/api/auth/register">
+        <div class="ui stacked segment">
+          <div class="field">
+            <div class="ui left icon input">
+              <i class="building icon"></i>
+              <input type="text" name="organization_name" placeholder="Organization Name">
+            </div>
+          </div>
+          <div class="field">
+            <div class="ui left icon input">
+              <i class="user icon"></i>
+              <input type="text" name="name" placeholder="Full Name">
+            </div>
+          </div>
+          <div class="field">
+            <div class="ui left icon input">
+              <i class="envelope icon"></i>
+              <input type="email" name="email" placeholder="Email Address">
+            </div>
+          </div>
+          <div class="field">
+            <div class="ui left icon input">
+              <i class="lock icon"></i>
+              <input type="password" name="password" placeholder="Password">
+            </div>
+          </div>
+          <button class="ui fluid large teal button" type="submit">Register</button>
+        </div>
+      </form>
+      <div class="ui message">
+        Already have an account? <a href="/login">Login</a>
+      </div>
+    </div>
+  </div>
+  <div id="flash-success-message" style="display: none;">
+        <%= success[0] || '' %>
+    </div>
+    <div id="flash-error-message" style="display: none;">
+        <%= error[0] || '' %>
+    </div>
+    
+    <script src="/js/main.js"></script>
+</body>
+</html>

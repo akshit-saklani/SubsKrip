@@ -1,0 +1,131 @@
+<div class="ui clearing segment">
+  <h2 class="ui left floated header">Customers</h2>
+  <button id="addCustomerBtn" class="ui right floated primary button">
+    <i class="user plus icon"></i> Add Customer
+  </button>
+</div>
+
+<div class="ui three stackable cards">
+  <% customers.forEach(c => { %>
+    <div class="ui card">
+      <div class="content">
+        <div class="header"><%= c.name %></div>
+        <div class="meta"><%= c.type %></div>
+        <div class="description">
+          <p><i class="envelope icon"></i> <%= c.email || 'N/A' %></p>
+          <p><i class="phone icon"></i> <%= c.phone || 'N/A' %></p>
+        </div>
+      </div>
+      <div class="extra content">
+        <% if (c.active) { %>
+          <div class="ui green label">Active</div>
+          <button class="ui red mini button toggle-customer" data-id="<%= c.id %>">
+            <i class="ban icon"></i> Disable
+          </button>
+        <% } else { %>
+          <div class="ui grey label">Inactive</div>
+          <button class="ui green mini button toggle-customer" data-id="<%= c.id %>">
+            <i class="check icon"></i> Enable
+          </button>
+        <% } %>
+        <button class="ui blue mini button edit-customer" data-id="<%= c.id %>" 
+          data-name="<%= c.name %>" data-email="<%= c.email %>" 
+          data-phone="<%= c.phone %>" data-type="<%= c.type %>">
+          <i class="edit icon"></i> Edit
+        </button>
+      </div>
+    </div>
+  <% }) %>
+</div>
+
+<!-- Add/Edit Customer Modal -->
+<div id="customerModal" class="ui small modal">
+  <div class="header">Customer Details</div>
+  <div class="content">
+    <form class="ui form" id="customerForm">
+      <input type="hidden" name="id" id="customerId">
+
+      <div class="field">
+        <label>Name</label>
+        <input type="text" name="name" id="customerName" required>
+      </div>
+
+      <div class="field">
+        <label>Email</label>
+        <input type="email" name="email" id="customerEmail">
+      </div>
+
+      <div class="field">
+        <label>Phone</label>
+        <input type="text" name="phone" id="customerPhone">
+      </div>
+
+      <div class="field">
+        <label>Customer Type</label>
+        <div class="ui selection dropdown" id="customerTypeDropdown">
+          <input type="hidden" name="customer_type" id="customerType" value="individual">
+          <i class="dropdown icon"></i>
+          <div class="default text">Select Type</div>
+          <div class="menu">
+            <div class="item" data-value="individual">Individual</div>
+            <div class="item" data-value="organization">Organization</div>
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" class="ui primary button">Save</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  $('.ui.dropdown').dropdown();
+
+  // Open Add Customer Modal
+  $('#addCustomerBtn').on('click', function() {
+    $('#customerId').val('');
+    $('#customerForm')[0].reset();
+    $('#customerType').val('individual');
+    $('#customerTypeDropdown').dropdown('set selected', 'individual');
+    $('#customerModal .header').text('Add Customer');
+    $('#customerModal').modal('show');
+  });
+
+  // Open Edit Customer Modal
+  $('.edit-customer').on('click', function() {
+    const id = $(this).data('id');
+    $('#customerId').val(id);
+    $('#customerName').val($(this).data('name'));
+    $('#customerEmail').val($(this).data('email'));
+    $('#customerPhone').val($(this).data('phone'));
+    $('#customerTypeDropdown').dropdown('set selected', $(this).data('type'));
+    $('#customerModal .header').text('Edit Customer');
+    $('#customerModal').modal('show');
+  });
+
+  // Save (Add/Edit)
+  $('#customerForm').on('submit', async function(e) {
+    e.preventDefault();
+    const id = $('#customerId').val();
+    const formData = Object.fromEntries(new FormData(this));
+    const url = id ? `/api/customers/${id}` : '/api/customers';
+    const method = id ? 'PUT' : 'POST';
+
+    const res = await fetch(url, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(formData)
+    });
+
+    if (res.ok) location.reload();
+    else alert('Error saving customer');
+  });
+
+  // Toggle Enable/Disable
+  $('.toggle-customer').on('click', async function() {
+    const id = $(this).data('id');
+    const res = await fetch(`/api/customers/${id}/toggle`, { method: 'PATCH' });
+    if (res.ok) location.reload();
+    else alert('Failed to toggle customer');
+  });
+</script>

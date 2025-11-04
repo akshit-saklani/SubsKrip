@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Home | Subscription Billing</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.5.0/dist/semantic.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.5.0/dist/semantic.min.js"></script>
+
+  <style>
+    body {
+      background-color: #f9fafb;
+    }
+    .main-content {
+      padding-top: 60px; /* for fixed header */
+      transition: all 0.3s ease;
+    }
+    .ui.sidebar.menu .item {
+      font-size: 1.1em;
+    }
+    .ui.sidebar.menu .item:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <%- include('../partials/sidebar') %>
+
+  <!-- Main Page Content -->
+  <div class="pusher">
+    <%- include('../partials/header') %>
+
+    <div class="main-content ui container">
+      <%- body %>
+  </div>
+
+  <script>
+    $('#toggleSidebar').on('click', function() {
+      $('.ui.sidebar').sidebar('toggle');
+    });
+
+    $('.ui.dropdown').dropdown();
+  </script>
+
+</body>
+</html>

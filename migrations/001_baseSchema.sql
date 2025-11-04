@@ -1,3 +1,10 @@
+CREATE DATABASE subkrip;
+CREATE USER 'subkrip'@'localhost' IDENTIFIED BY 'securePassword123';
+GRANT ALL PRIVILEGES ON subkrip.* TO 'subkrip'@'localhost';
+FLUSH PRIVILEGES;
+
+USE subkrip;
+
 -- ===========================
 -- ORGANIZATIONS
 -- ===========================
